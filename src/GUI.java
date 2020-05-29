@@ -4,21 +4,13 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.zip.DeflaterInputStream;
 
 public class GUI{
-
-    private JFrame frame;
-    private GridBagConstraints constraints = new GridBagConstraints();
-
     public GUI() {
 
-        JPanel panel = new JPanel();
-        panel.setBorder(BorderFactory.createEmptyBorder(30, 30, 10, 30));
-//        panel.setLayout(new GridBagLayout(constraints));
-        panel.setLayout(new GridLayout(9, 9));
-
         Content content = new Content(1);
-        JTextField[][] fieldMatrix = new JTextField[3][3];
+        JTextField[][] fieldMatrix = new JTextField[9][9];
 
         for (int i = 0; i < content.matrix.length; i++) {
             for (int j = 0; j < content.matrix[0].length; j++) {
@@ -54,17 +46,56 @@ public class GUI{
 //                t.setBackground(Color.cyan);
                 t.setFont(font1);
 
-//                fieldMatrix[i][j] = t;
-                panel.add(t);
+                fieldMatrix[i][j] = t;
+//                gridPanel.add(t);
             }
         }
 
+        JPanel gridPanel = new JPanel();
+        gridPanel.setBorder(BorderFactory.createEmptyBorder(5, 30, 30, 30));
+        gridPanel.setLayout(new GridLayout(3, 3));
+        gridPanel.setPreferredSize(new Dimension(600, 600));
+        gridPanel.setMaximumSize(gridPanel.getPreferredSize());
+        gridPanel.setMinimumSize(gridPanel.getPreferredSize());
 
-        frame = new JFrame();
-        frame.add(panel, BorderLayout.CENTER);
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                JPanel innerPanel = new JPanel();
+                innerPanel.setLayout(new GridLayout(3, 3));
+
+                for (int k = i*3; k < i*3 + 3; k++) {
+                    for (int l = j*3; l < j*3 + 3; l++) {
+                        innerPanel.add(fieldMatrix[k][l]);
+                    }
+                }
+
+                innerPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                gridPanel.add(innerPanel);
+            }
+        }
+
+        //Title
+        JPanel header = new JPanel();
+        JLabel title = new JLabel("Sudoku Engine!");
+        Font font2 = new Font("SansSerif", Font.BOLD, 50);
+        title.setFont(font2);
+        header.add(title);
+        JLabel description = new JLabel("<html>Enter numbers into the blank spaces so that each row, <br> column and 3x3 box contains the numbers 1 to 9 without repeats.</html>");
+        Font font1 = new Font("SansSerif", Font.ITALIC, 15);
+        description.setFont(font1);
+        header.add(description);
+        header.setBorder(BorderFactory.createEmptyBorder(15, 80, 0, 80));
+
+        JPanel outerPanel = new JPanel();
+        outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.PAGE_AXIS));
+        outerPanel.add(header);
+        outerPanel.add(gridPanel);
+
+        JFrame frame = new JFrame();
+        frame.add(outerPanel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Sudoku Viewer");
-        frame.setSize(600, 600);
+        frame.setSize(660, 800);
         frame.setVisible(true);
 
 
