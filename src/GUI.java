@@ -4,12 +4,13 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.zip.DeflaterInputStream;
 
-public class GUI{
+public class GUI implements ActionListener {
+    Content content;
+
     public GUI() {
 
-        Content content = new Content(1);
+        content = new Content(2);
         JTextField[][] fieldMatrix = new JTextField[9][9];
 
         for (int i = 0; i < content.matrix.length; i++) {
@@ -86,10 +87,15 @@ public class GUI{
         header.add(description);
         header.setBorder(BorderFactory.createEmptyBorder(15, 80, 0, 80));
 
+        JButton checkForCompletion = new JButton("Check if I'm done!");
+        checkForCompletion.addActionListener(this);
+
         JPanel outerPanel = new JPanel();
         outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.PAGE_AXIS));
+        outerPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
         outerPanel.add(header);
         outerPanel.add(gridPanel);
+        outerPanel.add(checkForCompletion);
 
         JFrame frame = new JFrame();
         frame.add(outerPanel, BorderLayout.CENTER);
@@ -112,6 +118,19 @@ public class GUI{
             }
             System.out.println();
         }
+        System.out.println();
+        System.out.println("-------------------------");
+        System.out.println();
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        boolean correct = content.matches(content.test2KEY);
+
+        if(correct){
+            JOptionPane.showMessageDialog(null, "You got it~");
+        }else{
+            JOptionPane.showMessageDialog(null, "Not quite.");
+        }
+    }
 }
