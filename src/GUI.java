@@ -48,7 +48,6 @@ public class GUI implements ActionListener {
                 t.setFont(font1);
 
                 fieldMatrix[i][j] = t;
-//                gridPanel.add(t);
             }
         }
 
