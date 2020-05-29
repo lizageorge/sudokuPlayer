@@ -51,7 +51,7 @@ public class Content {
     }
 
     // test inputs
-    int[] test1 = {
+    final int[] test1 = {
             0, 8, 0, 0, 0, 1, 0, 0, 2,
             0, 0, 0, 0, 0, 4, 0, 0, 1,
             0, 2, 3, 0, 6, 8, 7, 0, 0,
@@ -62,7 +62,7 @@ public class Content {
             0, 0, 0, 2, 0, 7, 0, 0, 0,
             0, 5, 0, 6, 0, 0, 9, 0, 0
     };
-    int[] test1KEY = {
+    final int[] test1KEY = {
             6, 8, 4, 7, 9, 1, 3, 5, 2,
             5, 7, 9, 3, 2, 4, 6, 8, 1,
             1, 2, 3, 5, 6, 8, 7, 4, 9,
@@ -75,7 +75,7 @@ public class Content {
     };
     //https://www.puzzles.ca/sudoku_puzzles/sudoku_easy_607.html Problem 607
 
-    int[] test2 = {
+    final int[] test2 = {
             6, 8, 4, 7, 9, 0, 3, 5, 2,
             5, 7, 9, 3, 2, 4, 6, 8, 0,
             0, 2, 3, 5, 6, 8, 7, 4, 9,
@@ -86,7 +86,7 @@ public class Content {
             9, 3, 8, 2, 4, 7, 5, 0, 6,
             4, 5, 7, 6, 0, 3, 9, 2, 8
     };
-    int[] test2KEY = {
+    final int[] test2KEY = {
             6, 8, 4, 7, 9, 1, 3, 5, 2,
             5, 7, 9, 3, 2, 4, 6, 8, 1,
             1, 2, 3, 5, 6, 8, 7, 4, 9,
@@ -98,12 +98,35 @@ public class Content {
             4, 5, 7, 6, 1, 3, 9, 2, 8
     };
 
-    int[] test3 = {
+    final int[] test3 = {
             0, 0, 0,
             0, 7, 0,
             0, 0, 0,
     };
 
 
+    public boolean checkCompletedRow(int[] mKEY, int currentRow) {
+        boolean rowComplete = true;
 
+        int keyRow = currentRow*9;
+        for (int i = keyRow; i < keyRow + 9; i++) {
+            if(mKEY[i] != matrix[currentRow][i-keyRow].value){
+                rowComplete = false;
+            }
+        }
+
+        return rowComplete;
+    }
+
+    public boolean checkCompletedColumn(int[] mKEY, int currentColumn) {
+        boolean columnComplete = true;
+
+        for (int i = 0; i < matrix.length; i++) {
+            if(matrix[i][currentColumn].value != mKEY[currentColumn + (i*9)]){
+                columnComplete = false;
+            }
+        }
+
+        return columnComplete;
+    }
 }

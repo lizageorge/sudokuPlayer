@@ -8,10 +8,17 @@ import java.awt.event.ActionListener;
 public class GUI implements ActionListener {
     Content content;
 
-    public GUI() {
+    private int version;
+    private int[] versionKEY;
 
-        content = new Content(2);
+    public GUI() {
+        //TODO turn choosing this and version key  into buttons
+        version = 2;
+
+        content = new Content(version);
         JTextField[][] fieldMatrix = new JTextField[9][9];
+
+        versionKEY = content.test2KEY;
 
         for (int i = 0; i < content.matrix.length; i++) {
             for (int j = 0; j < content.matrix[0].length; j++) {
@@ -20,31 +27,68 @@ public class GUI implements ActionListener {
                 JTextField t;
                 if (content.matrix[r][c].inked == false) { //this is a blank cell to be filled in
                     t = new JTextField();
-                    t.getDocument().addDocumentListener(new DocumentListener() {
-                        public void insertUpdate(DocumentEvent e) {
-                            copy();
-                        }
-                        public void removeUpdate(DocumentEvent e) {
-                            copy();
-                        }
-                        public void changedUpdate(DocumentEvent e) {
-                            copy();
-                        }
-
-                        public void copy() {
-                            if(t.getText().equals("") == false){
-                                content.matrix[r][c].value = Integer.parseInt(t.getText());
-                            }
-//                            printMatrix(content.matrix);
-                        }
-                    });
                 } else{ //this is a set/inked cell that cannot be changed
                     t = new JTextField(Integer.toString(content.matrix[r][c].value));
                     t.setEditable(false);
                 }
+                t.getDocument().addDocumentListener(new DocumentListener() {
+                    public void insertUpdate(DocumentEvent e) {
+                        onChange();
+                    }
+                    public void removeUpdate(DocumentEvent e) {
+                        onChange();
+                    }
+                    public void changedUpdate(DocumentEvent e) {
+                        onChange();
+                    }
+
+                    public void onChange() {
+                        if(t.getText().equals("") == false){ //if the character wasn't just deleter
+                            content.matrix[r][c].value = Integer.parseInt(t.getText());
+
+                            //TODO make all these colours prettier
+//                            check for completed row
+                            if(content.checkCompletedRow(versionKEY, r)){
+//                                t.setBackground(Color.cyan);
+                                for (int k = 0; k < fieldMatrix[0].length; k++) {
+                                    fieldMatrix[r][k].setBackground(Color.cyan);
+                                }
+                            }else{
+                                for (int k = 0; k < fieldMatrix[0].length; k++) {
+                                    if( content.matrix[r][k].inked == false) {
+                                        fieldMatrix[r][k].setBackground(Color.white);
+                                    }else{
+                                        //TODO fix this gray!!
+                                        fieldMatrix[r][k].setBackground(Color.LIGHT_GRAY);
+                                    }
+                                }
+                            }
+
+                            //check for completed column
+                            if(content.checkCompletedColumn(versionKEY, c)){
+//                                t.setBackground(Color.cyan);
+                                for (int l = 0; l < fieldMatrix.length; l++) {
+                                    fieldMatrix[l][c].setBackground(Color.cyan);
+                                }
+                            }else{
+                                for (int l = 0; l < fieldMatrix[0].length; l++) {
+                                    if( content.matrix[l][c].inked == false) {
+                                        fieldMatrix[l][c].setBackground(Color.white);
+                                    }else{
+                                        //TODO fix this gray!!
+                                        fieldMatrix[l][c].setBackground(Color.LIGHT_GRAY);
+                                    }
+                                }
+                            }
+                            //check for completed box
+                        }
+                            printMatrix(content.matrix);
+                    }
+                });
+
+
                 t.setHorizontalAlignment(JTextField.CENTER);
                 Font font1 = new Font("SansSerif", Font.BOLD, 40);
-//                t.setBackground(Color.cyan);
                 t.setFont(font1);
 
                 fieldMatrix[i][j] = t;
@@ -74,7 +118,7 @@ public class GUI implements ActionListener {
             }
         }
 
-        //Title
+        //Header
         JPanel header = new JPanel();
         JLabel title = new JLabel("Sudoku Engine!");
         Font font2 = new Font("SansSerif", Font.BOLD, 50);
@@ -86,21 +130,24 @@ public class GUI implements ActionListener {
         header.add(description);
         header.setBorder(BorderFactory.createEmptyBorder(15, 80, 0, 80));
 
+        //Footer
+        JPanel footer = new JPanel();
         JButton checkForCompletion = new JButton("Check if I'm done!");
         checkForCompletion.addActionListener(this);
+        footer.add(checkForCompletion);
 
         JPanel outerPanel = new JPanel();
         outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.PAGE_AXIS));
-        outerPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 20, 0));
+        outerPanel.setBorder(BorderFactory.createEmptyBorder(10, 0, 15, 0));
         outerPanel.add(header);
         outerPanel.add(gridPanel);
-        outerPanel.add(checkForCompletion);
+        outerPanel.add(footer);
 
         JFrame frame = new JFrame();
         frame.add(outerPanel, BorderLayout.CENTER);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Sudoku Viewer");
-        frame.setSize(660, 800);
+        frame.setSize(660, 900);
         frame.setVisible(true);
 
 
@@ -124,7 +171,7 @@ public class GUI implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        boolean correct = content.matches(content.test2KEY);
+        boolean correct = content.matches(versionKEY);
 
         if(correct){
             JOptionPane.showMessageDialog(null, "You got it~");
