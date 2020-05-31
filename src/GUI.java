@@ -5,11 +5,23 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+
 public class GUI implements ActionListener {
     Content content;
 
     private int version;
-    private int[] versionKEY;
+    private int[][] versionKEY;
+
+    //TODO create dark mode
+
+    // COLOR PALETTE:
+    final Color blank = new Color(255, 255, 255);
+    final Color inked = new Color(240, 244, 245);
+    final Color correct = new Color(219, 240, 204);
+    final Color incorrect = new Color(255, 182, 173);
+    final Color background = new Color(239, 240, 235);
+    final Color black = new Color(3, 42, 48);
+    final Color buttons = new Color(202, 206, 204);
 
     public GUI() {
         //TODO turn choosing this and version key  into buttons
@@ -18,8 +30,9 @@ public class GUI implements ActionListener {
         content = new Content(version);
         JTextField[][] fieldMatrix = new JTextField[9][9];
 
-        versionKEY = content.test2KEY;
+        versionKEY = content.easyKEY;
 
+        //creating the grid
         for (int i = 0; i < content.matrix.length; i++) {
             for (int j = 0; j < content.matrix[0].length; j++) {
                 final int r = i;
@@ -27,62 +40,89 @@ public class GUI implements ActionListener {
                 JTextField t;
                 if (content.matrix[r][c].inked == false) { //this is a blank cell to be filled in
                     t = new JTextField();
-                } else{ //this is a set/inked cell that cannot be changed
+                    t.setBackground(blank);
+                } else { //this is a set/inked cell that cannot be changed
                     t = new JTextField(Integer.toString(content.matrix[r][c].value));
                     t.setEditable(false);
+                    t.setBackground(inked);
                 }
                 t.getDocument().addDocumentListener(new DocumentListener() {
                     public void insertUpdate(DocumentEvent e) {
                         onChange();
                     }
+
                     public void removeUpdate(DocumentEvent e) {
                         onChange();
                     }
+
                     public void changedUpdate(DocumentEvent e) {
                         onChange();
                     }
 
                     public void onChange() {
-                        if(t.getText().equals("") == false){ //if the character wasn't just deleter
+                        if (t.getText().equals("") == false) { //if the character wasn't just deleter
                             content.matrix[r][c].value = Integer.parseInt(t.getText());
+//                            printMatrix(content.matrix);
 
                             //TODO make all these colours prettier
+                            //TODO slightly rearrange so that it turns grey on the delete
+
 //                            check for completed row
-                            if(content.checkCompletedRow(versionKEY, r)){
-//                                t.setBackground(Color.cyan);
+                            if (content.checkCompletedRow(versionKEY, r)) {
                                 for (int k = 0; k < fieldMatrix[0].length; k++) {
-                                    fieldMatrix[r][k].setBackground(Color.cyan);
+                                    fieldMatrix[r][k].setBackground(correct);
                                 }
-                            }else{
+                            } else {
                                 for (int k = 0; k < fieldMatrix[0].length; k++) {
-                                    if( content.matrix[r][k].inked == false) {
-                                        fieldMatrix[r][k].setBackground(Color.white);
-                                    }else{
+                                    if (content.matrix[r][k].inked == false) {
+                                        fieldMatrix[r][k].setBackground(blank);
+                                    } else {
                                         //TODO fix this gray!!
-                                        fieldMatrix[r][k].setBackground(Color.LIGHT_GRAY);
+                                        fieldMatrix[r][k].setBackground(inked);
                                     }
                                 }
                             }
-
+//
                             //check for completed column
-                            if(content.checkCompletedColumn(versionKEY, c)){
-//                                t.setBackground(Color.cyan);
+                            if (content.checkCompletedColumn(versionKEY, c)) {
                                 for (int l = 0; l < fieldMatrix.length; l++) {
-                                    fieldMatrix[l][c].setBackground(Color.cyan);
+                                    fieldMatrix[l][c].setBackground(correct);
                                 }
-                            }else{
+                            } else {
                                 for (int l = 0; l < fieldMatrix[0].length; l++) {
-                                    if( content.matrix[l][c].inked == false) {
-                                        fieldMatrix[l][c].setBackground(Color.white);
-                                    }else{
+                                    if (content.matrix[l][c].inked == false) {
+                                        fieldMatrix[l][c].setBackground(blank);
+                                    } else {
                                         //TODO fix this gray!!
-                                        fieldMatrix[l][c].setBackground(Color.LIGHT_GRAY);
+                                        fieldMatrix[l][c].setBackground(inked);
                                     }
                                 }
                             }
                             //check for completed box
+                            if(content.checkCompleteBox(versionKEY, r, c)){
+                                t.setBackground(Color.cyan);
+                                int rowStart = r - r%3;
+                                int columnStart = c - c%3;
+                                for (int i = rowStart; i < rowStart+3; i++) {
+                                    for (int j = columnStart; j < columnStart+3; j++) {
+                                        fieldMatrix[i][j].setBackground(correct);
+                                    }
+                                }
+                            }else{
+                                int rowStart = r - r%3;
+                                int columnStart = c - c%3;
+                                for (int i = rowStart; i < rowStart+3; i++) {
+                                    for (int j = columnStart; j < columnStart+3; j++) {
+                                        if (content.matrix[i][j].inked == false) {
+                                            fieldMatrix[i][j].setBackground(blank);
+                                        } else {
+                                            //TODO fix this gray!!
+                                            fieldMatrix[i][j].setBackground(inked);
+                                        }
+                                    }
+                                }
+                            }
                         }
-                            printMatrix(content.matrix);
                     }
                 });
 
@@ -101,14 +141,16 @@ public class GUI implements ActionListener {
         gridPanel.setPreferredSize(new Dimension(600, 600));
         gridPanel.setMaximumSize(gridPanel.getPreferredSize());
         gridPanel.setMinimumSize(gridPanel.getPreferredSize());
+        gridPanel.setBackground(background);
+        gridPanel.setForeground(black);
 
         for (int i = 0; i < 3; i++) {
             for (int j = 0; j < 3; j++) {
                 JPanel innerPanel = new JPanel();
                 innerPanel.setLayout(new GridLayout(3, 3));
 
-                for (int k = i*3; k < i*3 + 3; k++) {
-                    for (int l = j*3; l < j*3 + 3; l++) {
+                for (int k = i * 3; k < i * 3 + 3; k++) {
+                    for (int l = j * 3; l < j * 3 + 3; l++) {
                         innerPanel.add(fieldMatrix[k][l]);
                     }
                 }
@@ -123,18 +165,22 @@ public class GUI implements ActionListener {
         JLabel title = new JLabel("Sudoku Engine!");
         Font font2 = new Font("SansSerif", Font.BOLD, 50);
         title.setFont(font2);
+        title.setForeground(black);
         header.add(title);
         JLabel description = new JLabel("<html>Enter numbers into the blank spaces so that each row, <br> column and 3x3 box contains the numbers 1 to 9 without repeats.</html>");
         Font font1 = new Font("SansSerif", Font.ITALIC, 15);
         description.setFont(font1);
+        description.setForeground(black);
         header.add(description);
         header.setBorder(BorderFactory.createEmptyBorder(15, 80, 0, 80));
+        header.setBackground(background);
 
         //Footer
         JPanel footer = new JPanel();
         JButton checkForCompletion = new JButton("Check if I'm done!");
         checkForCompletion.addActionListener(this);
         footer.add(checkForCompletion);
+        footer.setBackground(background);
 
         JPanel outerPanel = new JPanel();
         outerPanel.setLayout(new BoxLayout(outerPanel, BoxLayout.PAGE_AXIS));
@@ -142,6 +188,7 @@ public class GUI implements ActionListener {
         outerPanel.add(header);
         outerPanel.add(gridPanel);
         outerPanel.add(footer);
+        outerPanel.setBackground(background);
 
         JFrame frame = new JFrame();
         frame.add(outerPanel, BorderLayout.CENTER);
@@ -157,7 +204,7 @@ public class GUI implements ActionListener {
         new GUI();
     }
 
-    public static void printMatrix(Cell[][] m){
+    public static void printMatrix(Cell[][] m) {
         for (int i = 0; i < m.length; i++) {
             for (int j = 0; j < m[0].length; j++) {
                 System.out.print(m[i][j].value);
@@ -173,9 +220,9 @@ public class GUI implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         boolean correct = content.matches(versionKEY);
 
-        if(correct){
+        if (correct) {
             JOptionPane.showMessageDialog(null, "You got it~");
-        }else{
+        } else {
             JOptionPane.showMessageDialog(null, "Not quite.");
         }
     }
