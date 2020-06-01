@@ -6,8 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class GUI
-{
+public class GUI {
     Content content;
 
     private String version;
@@ -26,7 +25,8 @@ public class GUI
     final Color incorrect = new Color(255, 182, 173);
     final Color background = new Color(239, 240, 235);
     final Color black = new Color(3, 42, 48);
-    final Color buttons = new Color(202, 206, 204);
+    final Color buttons = new Color(64, 105, 79);
+    final Color buttonText = new Color(255, 255, 255);
 
     public GUI() {
 
@@ -62,6 +62,13 @@ public class GUI
         mediumButton.addActionListener(new ButtonListener());
         hardButton = new JButton("Hard");
         hardButton.addActionListener(new ButtonListener());
+        easyButton.setBackground(buttons);
+        mediumButton.setBackground(buttons);
+        hardButton.setBackground(buttons);
+        easyButton.setForeground(buttonText);
+        mediumButton.setForeground(buttonText);
+        hardButton.setForeground(buttonText);
+
         versionPicker.add(easyButton);
         versionPicker.add(mediumButton);
         versionPicker.add(hardButton);
@@ -70,13 +77,9 @@ public class GUI
         frame.add(header);
         frame.setVisible(true);
 
-        System.out.println(version);
-
     }
 
     private void play() {
-        System.out.println("play method reached");
-
         JTextField[][] fieldMatrix = new JTextField[9][9];
 
         //creating the grid
@@ -97,9 +100,11 @@ public class GUI
                     public void insertUpdate(DocumentEvent e) {
                         onChange();
                     }
+
                     public void removeUpdate(DocumentEvent e) {
                         onChange();
                     }
+
                     public void changedUpdate(DocumentEvent e) {
                         onChange();
                     }
@@ -107,25 +112,24 @@ public class GUI
                     public void onChange() {
                         if (t.getText().equals("") == false) { //if the 'character' wasn't just a temporary blank after a delete
                             content.matrix[r][c].value = Integer.parseInt(t.getText());
-//                            printMatrix(content.matrix);
                         }
 
                         //check for completed box
-                        if(content.checkCompleteBox(versionKEY, r, c)){
+                        if (content.checkCompleteBox(versionKEY, r, c)) {
                             t.setBackground(Color.cyan);
-                            int rowStart = r - r%3;
-                            int columnStart = c - c%3;
-                            for (int i = rowStart; i < rowStart+3; i++) {
-                                for (int j = columnStart; j < columnStart+3; j++) {
+                            int rowStart = r - r % 3;
+                            int columnStart = c - c % 3;
+                            for (int i = rowStart; i < rowStart + 3; i++) {
+                                for (int j = columnStart; j < columnStart + 3; j++) {
                                     fieldMatrix[i][j].setBackground(correct);
                                 }
                             }
-                        }else{
-                            int rowStart = r - r%3;
-                            int columnStart = c - c%3;
-                            for (int i = rowStart; i < rowStart+3; i++) {
-                                for (int j = columnStart; j < columnStart+3; j++) {
-                                    if(content.checkCompletedRow(versionKEY, r) == false && content.checkCompletedRow(versionKEY, r) == false ){
+                        } else {
+                            int rowStart = r - r % 3;
+                            int columnStart = c - c % 3;
+                            for (int i = rowStart; i < rowStart + 3; i++) {
+                                for (int j = columnStart; j < columnStart + 3; j++) {
+                                    if (content.checkCompletedRow(versionKEY, r) == false && content.checkCompletedRow(versionKEY, r) == false) {
                                         if (content.matrix[i][j].inked == false) {
                                             fieldMatrix[i][j].setBackground(blank);
                                         } else {
@@ -144,7 +148,7 @@ public class GUI
                             }
                         } else {
                             for (int k = 0; k < fieldMatrix[0].length; k++) {
-                                if(!content.checkCompleteBox(versionKEY, r, c)){
+                                if (!content.checkCompleteBox(versionKEY, r, c)) {
                                     if (content.matrix[r][k].inked == false) {
                                         fieldMatrix[r][k].setBackground(blank);
                                     } else {
@@ -174,26 +178,24 @@ public class GUI
                         }
 
                         //check for incorrect cell
-                        if(content.incorrectCell(r, c) != null){
+                        if (content.incorrectCell(r, c) != null) {
                             fieldMatrix[r][c].setBackground(incorrect);
                             int incorrectR = content.incorrectCell(r, c)[0];
                             int incorrectC = content.incorrectCell(r, c)[1];
                             fieldMatrix[incorrectR][incorrectC].setBackground(incorrect);
-                        }else{
+                        } else {
                             if (!content.checkCompletedRow(versionKEY, r) && !content.checkCompleteBox(versionKEY, r, c) && !content.checkCompletedColumn(versionKEY, c)) {
                                 if (content.matrix[r][c].inked == false) {
                                     fieldMatrix[r][c].setBackground(blank);
                                 } else {
                                     fieldMatrix[r][c].setBackground(inked);
                                 }
-                            }
-                            else {
+                            } else {
                                 fieldMatrix[r][c].setBackground(correct);
                             }
                         }
                     }
                 });
-
 
                 t.setHorizontalAlignment(JTextField.CENTER);
                 Font font3 = new Font("SansSerif", Font.BOLD, 40);
@@ -232,6 +234,10 @@ public class GUI
         JPanel footer = new JPanel();
         checkForCompletion = new JButton("Check if I'm done!");
         checkForCompletion.addActionListener(new ButtonListener());
+        checkForCompletion.setBackground(buttons);
+        checkForCompletion.setForeground(buttonText);
+
+
         footer.add(checkForCompletion);
         footer.setBackground(background);
 
@@ -264,10 +270,10 @@ public class GUI
         System.out.println();
     }
 
-    private class ButtonListener implements ActionListener{
+    private class ButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            if(e.getSource() == checkForCompletion){
-                System.out.println("completion button listener reached");
+            if (e.getSource() == checkForCompletion) {
+//                System.out.println("completion button listener reached");
                 boolean correct = content.matches(versionKEY);
 
                 if (correct) {
@@ -275,29 +281,27 @@ public class GUI
                 } else {
                     JOptionPane.showMessageDialog(null, "Not quite.");
                 }
-            }else if(e.getSource() == easyButton){
+            } else if (e.getSource() == easyButton) {
 //                System.out.println("easy button listener reached");
                 version = "easy";
                 content = new Content(version);
                 versionKEY = content.easyKEY;
                 play();
-            }else if(e.getSource() == mediumButton){
+            } else if (e.getSource() == mediumButton) {
 //                System.out.println("medium button listener reached");
                 double rand = Math.random();
-                if(rand < 0.5){
+                if (rand < 0.5) {
                     version = "medium1";
                     content = new Content(version);
                     versionKEY = content.medium1KEY;
-                    System.out.println("medium 1");
-                }else{
+                } else {
                     version = "medium2";
                     content = new Content(version);
                     versionKEY = content.medium2KEY;
-                    System.out.println("medium 2");
                 }
 
                 play();
-            }else if(e.getSource() == hardButton){
+            } else if (e.getSource() == hardButton) {
 //                System.out.println("hard button listener reached");
 
                 version = "hard";

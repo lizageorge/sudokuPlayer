@@ -4,8 +4,6 @@ public class Content {
 
     final Color blank = new Color(255, 255, 255);
     final Color inked = new Color(240, 244, 245);
-    final Color correct = new Color(219, 240, 204);
-    final Color incorrect = new Color(255, 182, 173);
 
     Cell[][] matrix = new Cell[9][9];
 
@@ -100,14 +98,14 @@ public class Content {
     public int[] incorrectCell(int r, int c) {
         int currentValue = matrix[r][c].value;
         int[] output;
-        //check for incorect in same row
+        //check for incorrect in same row
         for (int i = 0; i < matrix.length; i++) {
             if(i != c && matrix[r][i].value == currentValue){
                 output = new int[]{r, i};
                 return output;
             }
         }
-        //check for incorect in same column
+        //check for incorrrect in same column
         for (int i = 0; i < matrix.length; i++) {
             if(i != r && matrix[i][c].value == currentValue){
                 output = new int[]{i, c};
