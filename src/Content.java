@@ -1,34 +1,30 @@
 public class Content {
     Cell[][] matrix = new Cell[9][9];
 
-    public Content(int version){
+    public Content(String version){
+        int[][] mToUse;
+        switch (version){
+            case "easy":
+                mToUse = easy;
+                break;
+            case "medium":
+                mToUse = medium1;
+                break;
+            case "hard":
+                mToUse = hard1;
+                break;
+
+            default:
+                mToUse = defaultArray;
+        }
         for (int row = 0; row < matrix.length; row++) {
             for (int column = 0; column < matrix[0].length; column++) {
                 matrix[row][column] = new Cell(0);
+                if(mToUse[row][column] != 0){
+                    matrix[row][column].value = mToUse[row][column];
+                    matrix[row][column].inked = true;
+                }
             }
-        }
-
-        switch (version){
-            case 1:
-                for (int i = 0; i < matrix.length; i++) {
-                    for (int j = 0; j < matrix[0].length; j++) {
-                        if(medium1[i][j] != 0){
-                            matrix[i][j].value = medium1[i][j];
-                            matrix[i][j].inked = true;
-                        }
-                    }
-                }
-                break;
-            case 2:
-                for (int i = 0; i < matrix.length; i++) {
-                    for (int j = 0; j < matrix[0].length; j++) {
-                        if(easy[i][j] != 0){
-                            matrix[i][j].value = easy[i][j];
-                            matrix[i][j].inked = true;
-                        }
-                    }
-                }
-                break;
         }
     }
 
@@ -87,6 +83,18 @@ public class Content {
     }
 
     // test inputs
+    //default
+    final  int[][] defaultArray = {
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            {0, 0, 0, 0, 0, 0, 0, 0, 0}
+    };
     //easy
     final int[][] easy = {
             {6, 8, 4, 7, 9, 0, 3, 5, 2},

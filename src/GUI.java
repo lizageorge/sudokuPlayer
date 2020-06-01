@@ -6,11 +6,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 
-public class GUI implements ActionListener {
+public class GUI
+{
     Content content;
 
-    private int version;
+    private String version;
     private int[][] versionKEY;
+
+    private JButton easyButton, mediumButton, hardButton, checkForCompletion;
+    private JFrame frame;
+    private JPanel header;
 
     //TODO create dark mode
 
@@ -24,13 +29,58 @@ public class GUI implements ActionListener {
     final Color buttons = new Color(202, 206, 204);
 
     public GUI() {
-        //TODO turn choosing this and version key  into buttons
-        version = 2;
 
-        content = new Content(version);
+        frame = new JFrame();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setTitle("Sudoku Viewer");
+        frame.setSize(660, 300);
+
+        //Header
+        header = new JPanel();
+        JLabel title = new JLabel("Sudoku Engine!");
+        Font font2 = new Font("SansSerif", Font.BOLD, 50);
+        title.setFont(font2);
+        title.setForeground(black);
+        header.add(title);
+        JLabel description = new JLabel("<html>Enter numbers into the blank spaces so that each row, <br> column and 3x3 box contains the numbers 1 to 9 without repeats.</html>");
+        Font font1 = new Font("SansSerif", Font.ITALIC, 15);
+        description.setFont(font1);
+        description.setForeground(black);
+        header.add(description);
+        header.setBorder(BorderFactory.createEmptyBorder(15, 80, 0, 80));
+        header.setBackground(background);
+
+        //user picking a version;
+        //TODO randomize bween two problems for each difficult
+        JPanel versionPicker = new JPanel();
+        frame.add(versionPicker);
+        JLabel pickVersion = new JLabel("Please pick a difficulty: ");
+        versionPicker.add(pickVersion);
+        easyButton = new JButton("Easy");
+        easyButton.addActionListener(new ButtonListener());
+        mediumButton = new JButton("Intermediate");
+        mediumButton.addActionListener(new ButtonListener());
+        hardButton = new JButton("Hard");
+        hardButton.addActionListener(new ButtonListener());
+        versionPicker.add(easyButton);
+        versionPicker.add(mediumButton);
+        versionPicker.add(hardButton);
+
+        header.add(versionPicker);
+        frame.add(header);
+        frame.setVisible(true);
+
+        //TODO set resizing off
+
+
+        System.out.println(version);
+
+    }
+
+    private void play() {
+        System.out.println("play method reached");
+
         JTextField[][] fieldMatrix = new JTextField[9][9];
-
-        versionKEY = content.easyKEY;
 
         //creating the grid
         for (int i = 0; i < content.matrix.length; i++) {
@@ -50,76 +100,71 @@ public class GUI implements ActionListener {
                     public void insertUpdate(DocumentEvent e) {
                         onChange();
                     }
-
                     public void removeUpdate(DocumentEvent e) {
                         onChange();
                     }
-
                     public void changedUpdate(DocumentEvent e) {
                         onChange();
                     }
 
                     public void onChange() {
-                        if (t.getText().equals("") == false) { //if the character wasn't just deleter
+                        if (t.getText().equals("") == false) { //if the 'character' wasn't just a temporary blank after a delete
                             content.matrix[r][c].value = Integer.parseInt(t.getText());
 //                            printMatrix(content.matrix);
+                        }
 
-                            //TODO make all these colours prettier
-                            //TODO slightly rearrange so that it turns grey on the delete
-
-//                            check for completed row
-                            if (content.checkCompletedRow(versionKEY, r)) {
-                                for (int k = 0; k < fieldMatrix[0].length; k++) {
-                                    fieldMatrix[r][k].setBackground(correct);
+                        //check for completed box
+                        if(content.checkCompleteBox(versionKEY, r, c)){
+                            t.setBackground(Color.cyan);
+                            int rowStart = r - r%3;
+                            int columnStart = c - c%3;
+                            for (int i = rowStart; i < rowStart+3; i++) {
+                                for (int j = columnStart; j < columnStart+3; j++) {
+                                    fieldMatrix[i][j].setBackground(correct);
                                 }
-                            } else {
-                                for (int k = 0; k < fieldMatrix[0].length; k++) {
-                                    if (content.matrix[r][k].inked == false) {
-                                        fieldMatrix[r][k].setBackground(blank);
+                            }
+                        }else{
+                            int rowStart = r - r%3;
+                            int columnStart = c - c%3;
+                            for (int i = rowStart; i < rowStart+3; i++) {
+                                for (int j = columnStart; j < columnStart+3; j++) {
+                                    if (content.matrix[i][j].inked == false) {
+                                        fieldMatrix[i][j].setBackground(blank);
                                     } else {
-                                        //TODO fix this gray!!
-                                        fieldMatrix[r][k].setBackground(inked);
+                                        fieldMatrix[i][j].setBackground(inked);
                                     }
                                 }
                             }
+                        }
+
+                        //TODO make the grid return to normal if char deleted.
+                        //TODO a complted row won't incl the og cell bc cancelled by column
+                        //check for completed row
+                        if (content.checkCompletedRow(versionKEY, r)) {
+                            for (int k = 0; k < fieldMatrix[0].length; k++) {
+                                fieldMatrix[r][k].setBackground(correct);
+                            }
+                        } else {
+                            for (int k = 0; k < fieldMatrix[0].length; k++) {
+                                if (content.matrix[r][k].inked == false) {
+                                    fieldMatrix[r][k].setBackground(blank);
+                                } else {
+                                    fieldMatrix[r][k].setBackground(inked);
+                                }
+                            }
+                        }
 //
-                            //check for completed column
-                            if (content.checkCompletedColumn(versionKEY, c)) {
-                                for (int l = 0; l < fieldMatrix.length; l++) {
-                                    fieldMatrix[l][c].setBackground(correct);
-                                }
-                            } else {
-                                for (int l = 0; l < fieldMatrix[0].length; l++) {
-                                    if (content.matrix[l][c].inked == false) {
-                                        fieldMatrix[l][c].setBackground(blank);
-                                    } else {
-                                        //TODO fix this gray!!
-                                        fieldMatrix[l][c].setBackground(inked);
-                                    }
-                                }
+                        //check for completed column
+                        if (content.checkCompletedColumn(versionKEY, c)) {
+                            for (int l = 0; l < fieldMatrix.length; l++) {
+                                fieldMatrix[l][c].setBackground(correct);
                             }
-                            //check for completed box
-                            if(content.checkCompleteBox(versionKEY, r, c)){
-                                t.setBackground(Color.cyan);
-                                int rowStart = r - r%3;
-                                int columnStart = c - c%3;
-                                for (int i = rowStart; i < rowStart+3; i++) {
-                                    for (int j = columnStart; j < columnStart+3; j++) {
-                                        fieldMatrix[i][j].setBackground(correct);
-                                    }
-                                }
-                            }else{
-                                int rowStart = r - r%3;
-                                int columnStart = c - c%3;
-                                for (int i = rowStart; i < rowStart+3; i++) {
-                                    for (int j = columnStart; j < columnStart+3; j++) {
-                                        if (content.matrix[i][j].inked == false) {
-                                            fieldMatrix[i][j].setBackground(blank);
-                                        } else {
-                                            //TODO fix this gray!!
-                                            fieldMatrix[i][j].setBackground(inked);
-                                        }
-                                    }
+                        } else {
+                            for (int l = 0; l < fieldMatrix[0].length; l++) {
+                                if (content.matrix[l][c].inked == false) {
+                                    fieldMatrix[l][c].setBackground(blank);
+                                } else {
+                                    fieldMatrix[l][c].setBackground(inked);
                                 }
                             }
                         }
@@ -128,8 +173,8 @@ public class GUI implements ActionListener {
 
 
                 t.setHorizontalAlignment(JTextField.CENTER);
-                Font font1 = new Font("SansSerif", Font.BOLD, 40);
-                t.setFont(font1);
+                Font font3 = new Font("SansSerif", Font.BOLD, 40);
+                t.setFont(font3);
 
                 fieldMatrix[i][j] = t;
             }
@@ -160,25 +205,10 @@ public class GUI implements ActionListener {
             }
         }
 
-        //Header
-        JPanel header = new JPanel();
-        JLabel title = new JLabel("Sudoku Engine!");
-        Font font2 = new Font("SansSerif", Font.BOLD, 50);
-        title.setFont(font2);
-        title.setForeground(black);
-        header.add(title);
-        JLabel description = new JLabel("<html>Enter numbers into the blank spaces so that each row, <br> column and 3x3 box contains the numbers 1 to 9 without repeats.</html>");
-        Font font1 = new Font("SansSerif", Font.ITALIC, 15);
-        description.setFont(font1);
-        description.setForeground(black);
-        header.add(description);
-        header.setBorder(BorderFactory.createEmptyBorder(15, 80, 0, 80));
-        header.setBackground(background);
-
         //Footer
         JPanel footer = new JPanel();
-        JButton checkForCompletion = new JButton("Check if I'm done!");
-        checkForCompletion.addActionListener(this);
+        checkForCompletion = new JButton("Check if I'm done!");
+        checkForCompletion.addActionListener(new ButtonListener());
         footer.add(checkForCompletion);
         footer.setBackground(background);
 
@@ -190,15 +220,10 @@ public class GUI implements ActionListener {
         outerPanel.add(footer);
         outerPanel.setBackground(background);
 
-        JFrame frame = new JFrame();
+        frame.setSize(660, 1000);
         frame.add(outerPanel, BorderLayout.CENTER);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setTitle("Sudoku Viewer");
-        frame.setSize(660, 900);
-        frame.setVisible(true);
-
-
     }
+
 
     public static void main(String[] args) {
         new GUI();
@@ -216,14 +241,38 @@ public class GUI implements ActionListener {
         System.out.println();
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        boolean correct = content.matches(versionKEY);
+    private class ButtonListener implements ActionListener{
+        public void actionPerformed(ActionEvent e) {
+            if(e.getSource() == checkForCompletion){
+                System.out.println("completion button listener reached");
+                boolean correct = content.matches(versionKEY);
 
-        if (correct) {
-            JOptionPane.showMessageDialog(null, "You got it~");
-        } else {
-            JOptionPane.showMessageDialog(null, "Not quite.");
+                if (correct) {
+                    JOptionPane.showMessageDialog(null, "You got it~");
+                } else {
+                    JOptionPane.showMessageDialog(null, "Not quite.");
+                }
+            }else if(e.getSource() == easyButton){
+                System.out.println("easy button listener reached");
+                version = "easy";
+                content = new Content(version);
+                versionKEY = content.easyKEY;
+                play();
+            }else if(e.getSource() == mediumButton){
+                System.out.println("medium button listener reached");
+                version = "medium";
+                content = new Content(version);
+                versionKEY = content.medium1KEY;
+                play();
+            }else if(e.getSource() == hardButton){
+                System.out.println("hard button listener reached");
+
+                version = "hard";
+                content = new Content(version);
+                versionKEY = content.hard1KEY;
+                play();
+            }
         }
     }
 }
+
