@@ -70,9 +70,6 @@ public class GUI
         frame.add(header);
         frame.setVisible(true);
 
-        //TODO set resizing off
-
-
         System.out.println(version);
 
     }
@@ -173,6 +170,25 @@ public class GUI
                                     }
 
                                 }
+                            }
+                        }
+
+                        //check for incorrect cell
+                        if(content.incorrectCell(r, c) != null){
+                            fieldMatrix[r][c].setBackground(incorrect);
+                            int incorrectR = content.incorrectCell(r, c)[0];
+                            int incorrectC = content.incorrectCell(r, c)[1];
+                            fieldMatrix[incorrectR][incorrectC].setBackground(incorrect);
+                        }else{
+                            if (!content.checkCompletedRow(versionKEY, r) && !content.checkCompleteBox(versionKEY, r, c) && !content.checkCompletedColumn(versionKEY, c)) {
+                                if (content.matrix[r][c].inked == false) {
+                                    fieldMatrix[r][c].setBackground(blank);
+                                } else {
+                                    fieldMatrix[r][c].setBackground(inked);
+                                }
+                            }
+                            else {
+                                fieldMatrix[r][c].setBackground(correct);
                             }
                         }
                     }

@@ -96,6 +96,40 @@ public class Content {
         return boxComplete;
     }
 
+
+    public int[] incorrectCell(int r, int c) {
+        int currentValue = matrix[r][c].value;
+        int[] output;
+        //check for incorect in same row
+        for (int i = 0; i < matrix.length; i++) {
+            if(i != c && matrix[r][i].value == currentValue){
+                output = new int[]{r, i};
+                return output;
+            }
+        }
+        //check for incorect in same column
+        for (int i = 0; i < matrix.length; i++) {
+            if(i != r && matrix[i][c].value == currentValue){
+                output = new int[]{i, c};
+                return output;
+            }
+        }
+
+        //check for incorrect in same box
+        int rowStart = r - r%3;
+        int columnStart = c - c%3;
+        for (int i = rowStart; i < rowStart+3; i++) {
+            for (int j = columnStart; j < columnStart+3; j++) {
+                if(i != r && j != c && matrix[i][j].value == currentValue){
+                    output = new int[]{i, j};
+                    return output;
+                }
+            }
+        }
+
+        return null;
+    }
+
     // test inputs
     //default
     final  int[][] defaultArray = {
@@ -215,5 +249,6 @@ public class Content {
             0, 7, 0,
             0, 0, 0,
     };
+
 }
 
