@@ -1,4 +1,12 @@
+import java.awt.*;
+
 public class Content {
+
+    final Color blank = new Color(255, 255, 255);
+    final Color inked = new Color(240, 244, 245);
+    final Color correct = new Color(219, 240, 204);
+    final Color incorrect = new Color(255, 182, 173);
+
     Cell[][] matrix = new Cell[9][9];
 
     public Content(String version){
@@ -23,6 +31,9 @@ public class Content {
                 if(mToUse[row][column] != 0){
                     matrix[row][column].value = mToUse[row][column];
                     matrix[row][column].inked = true;
+                    matrix[row][column].color = inked;
+                }else{
+                    matrix[row][column].color = blank;
                 }
             }
         }

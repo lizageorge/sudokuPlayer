@@ -128,10 +128,12 @@ public class GUI
                             int columnStart = c - c%3;
                             for (int i = rowStart; i < rowStart+3; i++) {
                                 for (int j = columnStart; j < columnStart+3; j++) {
-                                    if (content.matrix[i][j].inked == false) {
-                                        fieldMatrix[i][j].setBackground(blank);
-                                    } else {
-                                        fieldMatrix[i][j].setBackground(inked);
+                                    if(content.checkCompletedRow(versionKEY, r) == false && content.checkCompletedRow(versionKEY, r) == false ){
+                                        if (content.matrix[i][j].inked == false) {
+                                            fieldMatrix[i][j].setBackground(blank);
+                                        } else {
+                                            fieldMatrix[i][j].setBackground(inked);
+                                        }
                                     }
                                 }
                             }
@@ -146,11 +148,14 @@ public class GUI
                             }
                         } else {
                             for (int k = 0; k < fieldMatrix[0].length; k++) {
-                                if (content.matrix[r][k].inked == false) {
-                                    fieldMatrix[r][k].setBackground(blank);
-                                } else {
-                                    fieldMatrix[r][k].setBackground(inked);
+                                if(!content.checkCompleteBox(versionKEY, r, c)){
+                                    if (content.matrix[r][k].inked == false) {
+                                        fieldMatrix[r][k].setBackground(blank);
+                                    } else {
+                                        fieldMatrix[r][k].setBackground(inked);
+                                    }
                                 }
+
                             }
                         }
 //
@@ -161,10 +166,13 @@ public class GUI
                             }
                         } else {
                             for (int l = 0; l < fieldMatrix[0].length; l++) {
-                                if (content.matrix[l][c].inked == false) {
-                                    fieldMatrix[l][c].setBackground(blank);
-                                } else {
-                                    fieldMatrix[l][c].setBackground(inked);
+                                if (content.checkCompletedRow(versionKEY, r) == false && !content.checkCompleteBox(versionKEY, r, c)) {
+                                    if (content.matrix[l][c].inked == false) {
+                                        fieldMatrix[l][c].setBackground(blank);
+                                    } else {
+                                        fieldMatrix[l][c].setBackground(inked);
+                                    }
+
                                 }
                             }
                         }
