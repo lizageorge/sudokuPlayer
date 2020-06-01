@@ -15,8 +15,11 @@ public class Content {
             case "easy":
                 mToUse = easy;
                 break;
-            case "medium":
+            case "medium1":
                 mToUse = medium1;
+                break;
+            case "medium2":
+                mToUse = medium2;
                 break;
             case "hard":
                 mToUse = hard1;

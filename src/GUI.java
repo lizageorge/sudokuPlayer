@@ -34,6 +34,7 @@ public class GUI
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setTitle("Sudoku Viewer");
         frame.setSize(660, 300);
+        frame.setResizable(false);
 
         //Header
         header = new JPanel();
@@ -51,7 +52,6 @@ public class GUI
         header.setBackground(background);
 
         //user picking a version;
-        //TODO randomize bween two problems for each difficult
         JPanel versionPicker = new JPanel();
         frame.add(versionPicker);
         JLabel pickVersion = new JLabel("Please pick a difficulty: ");
@@ -140,7 +140,6 @@ public class GUI
                         }
 
                         //TODO make the grid return to normal if char deleted.
-                        //TODO a complted row won't incl the og cell bc cancelled by column
                         //check for completed row
                         if (content.checkCompletedRow(versionKEY, r)) {
                             for (int k = 0; k < fieldMatrix[0].length; k++) {
@@ -261,19 +260,29 @@ public class GUI
                     JOptionPane.showMessageDialog(null, "Not quite.");
                 }
             }else if(e.getSource() == easyButton){
-                System.out.println("easy button listener reached");
+//                System.out.println("easy button listener reached");
                 version = "easy";
                 content = new Content(version);
                 versionKEY = content.easyKEY;
                 play();
             }else if(e.getSource() == mediumButton){
-                System.out.println("medium button listener reached");
-                version = "medium";
-                content = new Content(version);
-                versionKEY = content.medium1KEY;
+//                System.out.println("medium button listener reached");
+                double rand = Math.random();
+                if(rand < 0.5){
+                    version = "medium1";
+                    content = new Content(version);
+                    versionKEY = content.medium1KEY;
+                    System.out.println("medium 1");
+                }else{
+                    version = "medium2";
+                    content = new Content(version);
+                    versionKEY = content.medium2KEY;
+                    System.out.println("medium 2");
+                }
+
                 play();
             }else if(e.getSource() == hardButton){
-                System.out.println("hard button listener reached");
+//                System.out.println("hard button listener reached");
 
                 version = "hard";
                 content = new Content(version);
